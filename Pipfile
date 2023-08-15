@@ -9,6 +9,7 @@ dataclass-csv = "*"
 adafruit-circuitpython-tca9548a = "*"
 adafruit-circuitpython-sht31d = "*"
 typing = "*"
+google-cloud-monitoring = "*"
 
 [dev-packages]
 

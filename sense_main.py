@@ -6,6 +6,7 @@ from absl import app
 from absl import flags
 from absl import logging
 from datetime import datetime
+from google.cloud import monitoring_v3
 
 FLAGS = flags.FLAGS
 
@@ -20,6 +21,9 @@ _HEAT_FOR_SECONDS = flags.DEFINE_integer(
     'Total delay between sensor polling is equal to --heat_for_seconds + '
     '--sense_delay_seconds')
 _DEVICE_ID = flags.DEFINE_string('device_id', '', 'Unique id of this device')
+_PROJECT_ID = flags.DEFINE_string(
+    'project_id', '',
+    'If non-empty, sends sensed data to google cloud monitoring.')
 
 
 def main(argv):
@@ -31,6 +35,11 @@ def main(argv):
                 sensor_data = sense.Sense(datetime.now(), _DEVICE_ID.value,
                                           i2c)
                 sense.WriteData(output_file, sensor_data)
+
+                if _PROJECT_ID.value:
+                    sense.SendDataToCloudMonitoring(
+                        monitoring_v3.MetricServiceClient(), _PROJECT_ID.value,
+                        sensor_data)
 
                 if _HEAT_FOR_SECONDS.value > 0:
                     sense.HeatSensors(_HEAT_FOR_SECONDS.value, i2c)
