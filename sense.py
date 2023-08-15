@@ -14,12 +14,13 @@ class SensorData:
     '''Class for recording sensor readings'''
 
     timestamp: datetime
+    device_id: str
     channel_id: int
     temperature_celsius: float
     relative_humidity: float
 
 
-def Sense(sense_time: datetime, i2c) -> list[SensorData]:
+def Sense(sense_time: datetime, device_id: str, i2c) -> list[SensorData]:
     sensor_data = []
     logging.info(f'Scan started at {sense_time}')
     tca = adafruit_tca9548a.TCA9548A(i2c)
@@ -27,6 +28,7 @@ def Sense(sense_time: datetime, i2c) -> list[SensorData]:
         try:
             sensor = adafruit_sht31d.SHT31D(tca[channel])
             data = SensorData(timestamp=sense_time,
+                              device_id=device_id,
                               channel_id=channel,
                               temperature_celsius=sensor.temperature,
                               relative_humidity=sensor.relative_humidity)

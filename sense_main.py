@@ -16,8 +16,10 @@ _SENSE_DELAY_SECONDS = flags.DEFINE_integer(
     'sense_delay_seconds', 60 * 5, 'Time between polling the sensors')
 _HEAT_FOR_SECONDS = flags.DEFINE_integer(
     'heat_for_seconds', 0,
-    'Amount of time to run the heater in each sensor after polling sensors. Total delay between sensor polling is equal to --heat_for_seconds + sense_delay_seconds'
-)
+    'Amount of time to run the heater in each sensor after polling sensors. '
+    'Total delay between sensor polling is equal to --heat_for_seconds + '
+    '--sense_delay_seconds')
+_DEVICE_ID = flags.DEFINE_string('device_id', '', 'Unique id of this device')
 
 
 def main(argv):
@@ -26,14 +28,15 @@ def main(argv):
     with open(_OUTPUT_CSV.value, 'a') as output_file:
         with board.I2C() as i2c:
             while True:
-                sensor_data = sense.Sense(datetime.now(), i2c)
+                sensor_data = sense.Sense(datetime.now(), _DEVICE_ID.value,
+                                          i2c)
                 sense.WriteData(output_file, sensor_data)
 
                 if _HEAT_FOR_SECONDS.value > 0:
                     sense.HeatSensors(_HEAT_FOR_SECONDS.value, i2c)
                 logging.info(
-                    f'Scan complete, sleeping for {_SENSE_DELAY_SECONDS.value} seconds'
-                )
+                    f'Scan complete, sleeping for {_SENSE_DELAY_SECONDS.value} '
+                    'seconds')
                 time.sleep(_SENSE_DELAY_SECONDS.value)
 
 

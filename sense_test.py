@@ -31,14 +31,17 @@ class SenseTest(unittest.TestCase):
         type(sensor_mocks[1]).relative_humidity = PropertyMock(return_value=3)
 
         expected_time = datetime.datetime(2023, 4, 2, 12, 56, 31)
-        data = sense.Sense(expected_time, i2c)
+        device_id = 'device_id'
+        data = sense.Sense(expected_time, device_id, i2c)
 
         self.assertListEqual(data, [
             sense.SensorData(timestamp=expected_time,
+                             device_id=device_id,
                              channel_id=0,
                              temperature_celsius=0,
                              relative_humidity=1),
             sense.SensorData(timestamp=expected_time,
+                             device_id=device_id,
                              channel_id=1,
                              temperature_celsius=2,
                              relative_humidity=3),
@@ -74,10 +77,12 @@ class SenseTest(unittest.TestCase):
 
         data = [
             sense.SensorData(timestamp=time,
+                             device_id='device_1',
                              channel_id=0,
                              temperature_celsius=0,
                              relative_humidity=1),
             sense.SensorData(timestamp=time,
+                             device_id='device_2',
                              channel_id=1,
                              temperature_celsius=2,
                              relative_humidity=3)
@@ -86,8 +91,8 @@ class SenseTest(unittest.TestCase):
         sense.WriteData(string_stream, data)
 
         self.assertEqual(
-            string_stream.getvalue(), '2023-04-02 12:56:31,0,0,1\r\n'
-            '2023-04-02 12:56:31,1,2,3\r\n')
+            string_stream.getvalue(), '2023-04-02 12:56:31,device_1,0,0,1\r\n'
+            '2023-04-02 12:56:31,device_2,1,2,3\r\n')
 
 
 if __name__ == '__main__':
