@@ -8,6 +8,7 @@ absl-py = "*"
 dataclass-csv = "*"
 adafruit-circuitpython-tca9548a = "*"
 adafruit-circuitpython-sht31d = "*"
+typing = "*"
 
 [dev-packages]
 
